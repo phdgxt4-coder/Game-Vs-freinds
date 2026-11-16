@@ -1,2 +1,0 @@
-{ "name": "battle-zone", "version": "0.1.0", "private": true, "type": "module",
-  "scripts": { "test": "node tests/imports.mjs && node tests/run.mjs" } }
