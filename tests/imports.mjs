@@ -7,7 +7,7 @@ const walk = (d) => { for (const f of readdirSync(d)) { const p = join(d, f); st
 walk('src');
 const exportsOf = (src) => {
   const s = new Set();
-  for (const m of src.matchAll(/export\s+(?:const|let|function|class)\s+([A-Za-z_$][\w$]*)/g)) s.add(m[1]);
+  for (const m of src.matchAll(/export\s+(?:async\s+)?(?:const|let|function|class)\s+([A-Za-z_$][\w$]*)/g)) s.add(m[1]);
   for (const m of src.matchAll(/export\s*\{([^}]*)\}/g)) m[1].split(',').forEach((n) => n.trim() && s.add(n.trim().split(/\s+as\s+/).pop()));
   return s;
 };
@@ -16,7 +16,7 @@ for (const f of files) {
   const src = readFileSync(f, 'utf8');
   for (const m of src.matchAll(/import\s+(?:\*\s+as\s+\w+|\{([^}]*)\}|\w+)\s+from\s+'([^']+)'/g)) {
     const spec = m[2];
-    if (!spec.startsWith('.')) { if (spec !== 'three') { console.log(`${f}: unknown package '${spec}'`); bad++; } continue; }
+    if (!spec.startsWith('.')) { if (spec !== 'three' && !spec.startsWith('three/addons/')) { console.log(`${f}: unknown package '${spec}'`); bad++; } continue; }
     const target = resolve(dirname(f), spec);
     if (!existsSync(target)) { console.log(`${f}: missing file ${spec}`); bad++; continue; }
     if (m[1]) {
