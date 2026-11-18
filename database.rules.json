@@ -1,0 +1,48 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$room": {
+        ".validate": "$room.matches(/^[A-Z0-9]{3,8}$/)",
+        ".read": true,
+        "start": {
+          ".write": "!data.exists()",
+          ".validate": "newData.isNumber()"
+        },
+        "players": {
+          "$pid": {
+            ".write": true,
+            ".validate": "newData.hasChildren(['n','x','z','yw','hp','al'])",
+            "n": { ".validate": "newData.isString() && newData.val().length <= 12" },
+            "x": { ".validate": "newData.isNumber() && newData.val() > -500 && newData.val() < 500" },
+            "z": { ".validate": "newData.isNumber() && newData.val() > -500 && newData.val() < 500" },
+            "yw": { ".validate": "newData.isNumber()" },
+            "hp": { ".validate": "newData.isNumber() && newData.val() <= 100" },
+            "al": { ".validate": "newData.isNumber() && (newData.val() == 0 || newData.val() == 1)" },
+            "k": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 1000" },
+            "$other": { ".validate": false }
+          }
+        },
+        "shots": {
+          "$sid": {
+            ".write": "!data.exists()",
+            ".validate": "newData.hasChildren(['o','x','y','z','dx','dy','dz','d','t'])",
+            "o": { ".validate": "newData.isString() && newData.val().length <= 12" },
+            "x": { ".validate": "newData.isNumber()" },
+            "y": { ".validate": "newData.isNumber()" },
+            "z": { ".validate": "newData.isNumber()" },
+            "dx": { ".validate": "newData.isNumber()" },
+            "dy": { ".validate": "newData.isNumber()" },
+            "dz": { ".validate": "newData.isNumber()" },
+            "d": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 200" },
+            "h": { ".validate": "newData.isString() && newData.val().length <= 12" },
+            "hs": { ".validate": "newData.isNumber()" },
+            "t": { ".validate": "newData.isNumber()" },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}
