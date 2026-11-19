@@ -45,17 +45,18 @@ export class TouchControls {
     if (!st || e.pointerId !== st.id) return;
     let dx = e.clientX - st.ox, dy = e.clientY - st.oy;
     const d = Math.hypot(dx, dy);
-    if (d > I.stickRadius) { // drag the base along so the knob stays on the rim
-      const k = (d - I.stickRadius) / d;
+    const reach = I.stickRadius * I.stickReach;
+    if (d > reach) { // drag the base along once the thumb is far beyond the ring
+      const k = (d - reach) / d;
       st.ox += dx * k; st.oy += dy * k;
       dx = e.clientX - st.ox; dy = e.clientY - st.oy;
     }
-    const o = shapeStick(dx, dy);
-    this.latched = updateSprintLatch(this.latched, o.mag);
+    const dist = Math.hypot(dx, dy), o = shapeStick(dx, dy);
+    this.latched = updateSprintLatch(this.latched, dist / I.stickRadius);
     const t = this.s.touch; t.x = o.x; t.y = o.y; t.sprint = this.latched;
-    const r = I.stickRadius;
+    const r = I.stickRadius, kx = dist > r ? r / dist : 1; // knob stays on the rim
     this.e.ring.style.transform = `translate3d(${st.ox - r}px,${st.oy - r}px,0)`;
-    this.e.knob.style.transform = `translate3d(${dx}px,${dy}px,0)`;
+    this.e.knob.style.transform = `translate3d(${dx * kx}px,${dy * kx}px,0)`;
   }
   _stickUp(e) {
     if (!this.stick || e.pointerId !== this.stick.id) return;

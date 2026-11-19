@@ -11,7 +11,7 @@ export function shapeStick(dx, dy, radius = CONFIG.input.stickRadius, dead = CON
   return out;
 }
 
-/** Hysteresis so sprint does not flicker around the threshold. */
-export function updateSprintLatch(latched, mag) {
-  return latched ? mag > CONFIG.input.sprintOff : mag >= CONFIG.input.sprintOn;
+/** `over` = finger distance / ring radius. Sprint engages when the thumb is pulled past the ring (hysteresis avoids flicker). */
+export function updateSprintLatch(latched, over) {
+  return latched ? over > CONFIG.input.sprintOff : over >= CONFIG.input.sprintOn;
 }
