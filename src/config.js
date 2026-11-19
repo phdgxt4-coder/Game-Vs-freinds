@@ -4,9 +4,9 @@ export const CONFIG = Object.freeze({
   player: Object.freeze({
     radius: 0.4, heightStand: 1.8, heightCrouch: 1.15, eyeStand: 1.65, eyeCrouch: 1.05,
     stepHeight: 0.4, stepSmooth: 16,
-    walk: 4.2, sprint: 7.2, crouch: 2.0, sprintMinForward: 0.5,
-    accelGround: 42, decelGround: 36, accelAir: 9, decelAir: 1.2,
-    gravity: 22, jump: 7.0, coyote: 0.1, jumpBuffer: 0.12, strideRate: 1.6,
+    walk: 3.0, sprint: 5.2, crouch: 1.6, sprintMinForward: 0.5,
+    accelGround: 30, decelGround: 28, accelAir: 7, decelAir: 1.2,
+    gravity: 22, jump: 7.0, coyote: 0.1, jumpBuffer: 0.12, airStep: 0.05, stepWalk: 0.95, stepRun: 1.6,
   }),
   camera: Object.freeze({
     fov: 72, fovSprint: 83, fovCrouch: 69, fovDamp: 8, near: 0.1, far: 260,
@@ -17,7 +17,12 @@ export const CONFIG = Object.freeze({
     dipK: 180, dipC: 20, landDip: 0.12,
   }),
   input: Object.freeze({
-    stickRadius: 56, deadzone: 0.12, curve: 1.35, sprintOn: 0.9, sprintOff: 0.78,
-    lookSens: 0.0042, mouseSens: 0.0022,
+    stickRadius: 70, stickReach: 1.6, deadzone: 0.12, curve: 1.35, sprintOn: 1.25, sprintOff: 1.08, // sprint = pull the thumb past the ring
+    lookSens: 0.0032, mouseSens: 0.0022,
+  }),
+  character: Object.freeze({
+    model: './assets/characters/hazmat.glb', weapon: 'AK', yawOffset: Math.PI, // model faces +Z, game forward is -Z
+    fade: 0.18, walkRef: 1.9, runRef: 4.6, runFrom: 3.8,
+    aim: Object.freeze({ Abdomen: 0.2, Torso: 0.45, Head: 0.25 }), // share of camera pitch applied per bone
   }),
 });
