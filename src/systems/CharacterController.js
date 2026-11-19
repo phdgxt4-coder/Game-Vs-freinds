@@ -1,5 +1,5 @@
 import { CONFIG } from '../config.js';
-import { damp, lerp } from '../core/math.js';
+import { clamp, damp, lerp } from '../core/math.js';
 
 const P = CONFIG.player, EPS = 1e-4;
 
@@ -27,7 +27,7 @@ export class CharacterController {
     this._vertical(dt);
     this.stepOff = damp(this.stepOff, 0, P.stepSmooth, dt);
     this.speed = Math.hypot(this.vx, this.vz);
-    if (this.grounded) this.stride += this.speed * dt * P.strideRate;
+    if (this.grounded) this.stride += (this.speed * dt * Math.PI) / lerp(P.stepWalk, P.stepRun, clamp((this.speed - 2) / 3, 0, 1)); // one step = PI
   }
   _canStand() { return this.world.ceilingHeight(this.x, this.z, P.radius, this.y + P.heightCrouch) >= this.y + P.heightStand; }
   _crouch(dt, c) {
@@ -63,14 +63,15 @@ export class CharacterController {
 
     const ox = this.x, oz = this.z, before = Math.hypot(this.vx, this.vz);
     this.x += this.vx * dt; this.z += this.vz * dt;
-    if (this.world.resolveHorizontal(this, P.radius, this.y + P.stepHeight, this.y + this.height)) {
+    const sh = this.grounded ? P.stepHeight : P.airStep; // ledges can only be stepped onto while walking: no mantling by jumping
+    if (this.world.resolveHorizontal(this, P.radius, this.y + sh, this.y + this.height)) {
       this.vx = (this.x - ox) / dt; this.vz = (this.z - oz) / dt; // keep the tangential (sliding) part
       const after = Math.hypot(this.vx, this.vz);
       if (after > before && after > 0) { const k = before / after; this.vx *= k; this.vz *= k; }
     }
   }
   _vertical(dt) {
-    const w = this.world;
+    const w = this.world, yPrev = this.y;
     if (!this.grounded) {
       const headBefore = this.y + this.height;
       this.vy -= P.gravity * dt; this.y += this.vy * dt;
@@ -79,7 +80,8 @@ export class CharacterController {
         if (this.y + this.height > ceil) { this.y = ceil - this.height; this.vy = 0; }
       }
     }
-    const gh = w.groundHeight(this.x, this.z, P.radius, this.y + P.stepHeight);
+    // swept: a fast fall may end below the surface it crossed, so look from the previous height
+    const gh = w.groundHeight(this.x, this.z, P.radius, this.grounded ? this.y + P.stepHeight : Math.max(yPrev, this.y) + P.airStep);
     if (this.grounded) {
       if (this.y - gh <= P.stepHeight + EPS) {
         if (Math.abs(this.y - gh) > EPS) this.stepOff += this.y - gh; // hide the snap from the camera
